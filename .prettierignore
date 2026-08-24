@@ -1,0 +1,11 @@
+# Generated dependency and package-manager state
+pnpm-lock.yaml
+**/Gemfile.lock
+
+# Native projects are generated from the validated React Native template and
+# are formatted by their platform tooling.
+apps/example/android/**
+apps/example/ios/**
+
+# Binary model assets
+**/*.glb

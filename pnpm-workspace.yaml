@@ -1,0 +1,13 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+
+autoInstallPeers: false
+dedupePeerDependents: true
+linkWorkspacePackages: true
+nodeLinker: hoisted
+strictPeerDependencies: true
+
+onlyBuiltDependencies:
+  - esbuild
+  - unrs-resolver

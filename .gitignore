@@ -1,0 +1,31 @@
+node_modules/
+lib/
+coverage/
+.artifacts/
+*.tgz
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# React Native / Android
+**/.gradle/
+**/android/.cxx/
+**/android/**/.cxx/
+**/android/app/build/
+**/android/build/
+**/android/local.properties
+
+# React Native / iOS
+**/ios/Pods/
+**/ios/build/
+**/ios/DerivedData/
+**/*.xcworkspace/xcuserdata/
+**/*.xcodeproj/xcuserdata/
+
+# Ruby
+**/.bundle/
+**/vendor/bundle/
+
+# Metro
+**/.metro-health-check*

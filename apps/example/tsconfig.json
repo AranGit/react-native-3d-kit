@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["jest", "react", "react-native"],
+    "baseUrl": ".",
+    "paths": {
+      "@arangit/react-native-model-viewer": [
+        "../../packages/model-viewer/src/index.ts"
+      ],
+      "@arangit/react-native-3d-controls": [
+        "../../packages/controls/src/index.ts"
+      ],
+      "@arangit/react-native-3d-hotspots": [
+        "../../packages/hotspots/src/index.ts"
+      ],
+      "react-native-reanimated": ["../../types/react-native-reanimated.d.ts"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "fixed": [
+    [
+      "@arangit/react-native-model-viewer",
+      "@arangit/react-native-3d-controls",
+      "@arangit/react-native-3d-hotspots"
+    ]
+  ],
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "linked": [],
+  "ignore": [],
+  "privatePackages": {
+    "version": false,
+    "tag": false
+  }
+}

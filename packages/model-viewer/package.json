@@ -1,0 +1,79 @@
+{
+  "name": "@arangit/react-native-model-viewer",
+  "version": "0.1.0",
+  "description": "A typed GLB model viewer for React Native powered by react-native-filament.",
+  "main": "./lib/module/index.js",
+  "module": "./lib/module/index.js",
+  "types": "./lib/typescript/index.d.ts",
+  "exports": {
+    ".": {
+      "react-native": "./src/index.ts",
+      "types": "./lib/typescript/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bob build",
+    "clean": "rimraf lib coverage",
+    "lint": "eslint src __tests__ --ext .ts,.tsx --no-error-on-unmatched-pattern",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "jest --config jest.config.js --runInBand"
+  },
+  "keywords": [
+    "react-native",
+    "filament",
+    "3d",
+    "glb",
+    "model-viewer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AranGit/react-native-3d-kit.git",
+    "directory": "packages/model-viewer"
+  },
+  "homepage": "https://github.com/AranGit/react-native-3d-kit#readme",
+  "bugs": {
+    "url": "https://github.com/AranGit/react-native-3d-kit/issues"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react": ">=19.2.0 <20",
+    "react-native": ">=0.83.10 <0.84",
+    "react-native-filament": ">=1.11.0 <1.12",
+    "react-native-worklets-core": ">=1.6.3 <1.7"
+  },
+  "devDependencies": {
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-filament": "1.11.0",
+    "react-native-worklets-core": "1.6.3"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "name": "@arangit/react-native-3d-controls",
+  "version": "0.1.0",
+  "description": "Gesture-driven orbit controls for @arangit/react-native-model-viewer.",
+  "main": "./lib/module/index.js",
+  "module": "./lib/module/index.js",
+  "types": "./lib/typescript/index.d.ts",
+  "exports": {
+    ".": {
+      "react-native": "./src/index.ts",
+      "types": "./lib/typescript/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bob build",
+    "clean": "rimraf lib coverage",
+    "lint": "eslint src __tests__ --ext .ts,.tsx --no-error-on-unmatched-pattern",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "jest --config jest.config.js --runInBand"
+  },
+  "keywords": [
+    "react-native",
+    "3d",
+    "orbit-controls",
+    "gesture-handler"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AranGit/react-native-3d-kit.git",
+    "directory": "packages/controls"
+  },
+  "homepage": "https://github.com/AranGit/react-native-3d-kit#readme",
+  "bugs": {
+    "url": "https://github.com/AranGit/react-native-3d-kit/issues"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@arangit/react-native-model-viewer": "^0.1.0",
+    "react": ">=19.2.0 <20",
+    "react-native": ">=0.83.10 <0.84",
+    "react-native-gesture-handler": ">=2.32.0 <3"
+  },
+  "devDependencies": {
+    "@arangit/react-native-model-viewer": "workspace:*",
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-gesture-handler": "2.32.0"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}
