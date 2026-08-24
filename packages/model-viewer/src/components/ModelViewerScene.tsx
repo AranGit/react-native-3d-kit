@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import {
   DefaultLight,
   FilamentView,
@@ -34,6 +34,11 @@ interface ModelViewerSceneProps {
   onCameraChange: () => void;
 }
 
+// react-native-filament releases DefaultLight's environment buffer after
+// applying it. Keep the light subtree from re-rendering with scene state so
+// the released buffer is not submitted to Filament a second time.
+const StableDefaultLight = memo(DefaultLight);
+
 export function ModelViewerScene({
   source,
   viewport,
@@ -63,7 +68,7 @@ export function ModelViewerScene({
 
   return (
     <FilamentView enableTransparentRendering style={StyleSheet.absoluteFill}>
-      <DefaultLight />
+      <StableDefaultLight />
       <ModelRenderer model={model} />
       <CameraRig
         key={cameraRevision}
