@@ -171,12 +171,16 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm pack:check
+pnpm native:android:build
+pnpm native:ios:pods
+pnpm native:ios:build
 pnpm validate
 ```
 
 Changes should include focused tests and a Changeset when they alter published
 behavior. See [architecture](./docs/architecture.md) and
-[releasing](./docs/releasing.md).
+[releasing](./docs/releasing.md). Native changes should also follow the
+[build and runtime validation checklist](./docs/native-validation.md).
 
 Contributions should branch from `main`, keep the package dependency direction
 intact, add meaningful tests, run `pnpm validate` and `pnpm pack:check`, and add

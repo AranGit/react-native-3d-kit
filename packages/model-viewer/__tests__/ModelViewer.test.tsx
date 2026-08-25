@@ -1,4 +1,4 @@
-import { createRef } from 'react';
+import { createRef, useEffect } from 'react';
 import { Text } from 'react-native';
 import {
   act,
@@ -52,6 +52,9 @@ const mockManipulator = {
     [0, 1, 0],
   ]),
 };
+const mockUseCameraManipulator = jest.fn(
+  (_configuration: unknown) => mockManipulator,
+);
 
 jest.mock('react-native-filament', () => {
   const React = require('react') as typeof import('react');
@@ -74,7 +77,8 @@ jest.mock('react-native-filament', () => {
       return mockRuntime.model;
     },
     useFilamentContext: () => ({ view: mockRuntime.view }),
-    useCameraManipulator: () => mockManipulator,
+    useCameraManipulator: (configuration: unknown) =>
+      mockUseCameraManipulator(configuration),
     useWorkletCallback:
       (callback: (...args: never[]) => unknown) =>
       async (...args: never[]) =>
@@ -100,6 +104,17 @@ function StatusProbe() {
       {status}:{viewport.width}x{viewport.height}
     </Text>
   );
+}
+
+function ProjectionSubscriptionProbe({ listener }: { listener: () => void }) {
+  const { subscribeToProjectionUpdates } = useModelViewer();
+
+  useEffect(
+    () => subscribeToProjectionUpdates(listener),
+    [listener, subscribeToProjectionUpdates],
+  );
+
+  return null;
 }
 
 describe('ModelViewer', () => {
@@ -203,6 +218,106 @@ describe('ModelViewer', () => {
       x: 12,
       y: 34,
     });
+  });
+
+  it('fits loaded bounds and resets to the fitted camera home', async () => {
+    mockRuntime.model = loadedModel;
+    const ref = createRef<ModelViewerHandle>();
+    const screen = render(
+      <ModelViewer ref={ref} source={{ uri: 'model.glb' }}>
+        <StatusProbe />
+      </ModelViewer>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId('status-probe').props.children[0]).toBe(
+        'loaded',
+      ),
+    );
+
+    let fitted = false;
+    await act(async () => {
+      fitted = ref.current?.fitToModel() ?? false;
+    });
+
+    const expectedDistance = Math.hypot(1, 2, 1) * 2.75;
+    expect(fitted).toBe(true);
+    await waitFor(() =>
+      expect(mockUseCameraManipulator).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          orbitHomePosition: [0, 0, expectedDistance],
+          targetPosition: [0, 0, 0],
+        }),
+      ),
+    );
+
+    const callsAfterFit = mockUseCameraManipulator.mock.calls.length;
+    await act(async () => {
+      ref.current?.resetCamera();
+    });
+
+    await waitFor(() =>
+      expect(mockUseCameraManipulator.mock.calls.length).toBeGreaterThan(
+        callsAfterFit,
+      ),
+    );
+    expect(mockUseCameraManipulator).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        orbitHomePosition: [0, 0, expectedDistance],
+        targetPosition: [0, 0, 0],
+      }),
+    );
+  });
+
+  it('returns false when fit is requested before the model loads', () => {
+    const ref = createRef<ModelViewerHandle>();
+    render(<ModelViewer ref={ref} source={{ uri: 'model.glb' }} />);
+
+    expect(ref.current?.fitToModel()).toBe(false);
+  });
+
+  it('coalesces projection notifications and removes subscriptions', () => {
+    let scheduledFrame: ((timestamp: number) => void) | null = null;
+    const requestFrame = jest
+      .spyOn(globalThis, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        scheduledFrame = callback;
+        return 17;
+      });
+    const listener = jest.fn();
+    const screen = render(
+      <ModelViewer source={{ uri: 'model.glb' }} testID="viewer">
+        <ProjectionSubscriptionProbe listener={listener} />
+      </ModelViewer>,
+    );
+
+    act(() => {
+      fireEvent(screen.getByTestId('viewer'), 'layout', {
+        nativeEvent: { layout: { width: 100, height: 100, x: 0, y: 0 } },
+      });
+      fireEvent(screen.getByTestId('viewer'), 'layout', {
+        nativeEvent: { layout: { width: 100, height: 100, x: 0, y: 0 } },
+      });
+    });
+
+    expect(requestFrame).toHaveBeenCalledTimes(1);
+    act(() => {
+      scheduledFrame?.(16);
+    });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    screen.rerender(
+      <ModelViewer source={{ uri: 'model.glb' }} testID="viewer" />,
+    );
+    act(() => {
+      fireEvent(screen.getByTestId('viewer'), 'layout', {
+        nativeEvent: { layout: { width: 120, height: 100, x: 0, y: 0 } },
+      });
+      scheduledFrame?.(32);
+    });
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    requestFrame.mockRestore();
   });
 
   it('renders an observable error fallback', async () => {

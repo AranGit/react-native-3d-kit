@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { BasicViewerExample } from './examples/BasicViewerExample';
 import { ControlsExample } from './examples/ControlsExample';
 import { HotspotsExample } from './examples/HotspotsExample';
@@ -12,7 +15,8 @@ const EXAMPLES = [
   { id: 'hotspots', label: 'Hotspots', component: HotspotsExample },
 ] as const;
 
-export default function App() {
+function ExampleApp() {
+  const insets = useSafeAreaInsets();
   const [activeId, setActiveId] =
     useState<(typeof EXAMPLES)[number]['id']>('viewer');
   const ActiveExample =
@@ -20,44 +24,55 @@ export default function App() {
     BasicViewerExample;
 
   return (
+    <GestureHandlerRootView style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor="#080C13" />
+      <View
+        style={[
+          styles.safeArea,
+          { paddingBottom: insets.bottom, paddingTop: insets.top },
+        ]}
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.kicker}>@ARANGIT</Text>
+            <Text style={styles.heading}>React Native 3D Kit</Text>
+          </View>
+          <View style={styles.versionBadge}>
+            <Text style={styles.versionText}>MVP · 0.1</Text>
+          </View>
+        </View>
+
+        <View style={styles.stage}>
+          <ActiveExample />
+        </View>
+
+        <View accessibilityRole="tablist" style={styles.tabs}>
+          {EXAMPLES.map((example) => {
+            const active = example.id === activeId;
+            return (
+              <Pressable
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+                key={example.id}
+                onPress={() => setActiveId(example.id)}
+                style={[styles.tab, active && styles.activeTab]}
+              >
+                <Text style={[styles.tabLabel, active && styles.activeLabel]}>
+                  {example.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+    </GestureHandlerRootView>
+  );
+}
+
+export default function App() {
+  return (
     <SafeAreaProvider>
-      <GestureHandlerRootView style={styles.root}>
-        <StatusBar barStyle="light-content" backgroundColor="#080C13" />
-        <SafeAreaView edges={['top', 'bottom']} style={styles.safeArea}>
-          <View style={styles.header}>
-            <View>
-              <Text style={styles.kicker}>@ARANGIT</Text>
-              <Text style={styles.heading}>React Native 3D Kit</Text>
-            </View>
-            <View style={styles.versionBadge}>
-              <Text style={styles.versionText}>MVP · 0.1</Text>
-            </View>
-          </View>
-
-          <View style={styles.stage}>
-            <ActiveExample />
-          </View>
-
-          <View accessibilityRole="tablist" style={styles.tabs}>
-            {EXAMPLES.map((example) => {
-              const active = example.id === activeId;
-              return (
-                <Pressable
-                  accessibilityRole="tab"
-                  accessibilityState={{ selected: active }}
-                  key={example.id}
-                  onPress={() => setActiveId(example.id)}
-                  style={[styles.tab, active && styles.activeTab]}
-                >
-                  <Text style={[styles.tabLabel, active && styles.activeLabel]}>
-                    {example.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </SafeAreaView>
-      </GestureHandlerRootView>
+      <ExampleApp />
     </SafeAreaProvider>
   );
 }

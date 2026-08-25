@@ -7,6 +7,9 @@
     "clean": "rimraf coverage",
     "ios": "react-native run-ios",
     "lint": "eslint .",
+    "native:android:build": "cd android && ./gradlew :app:assembleDebug --no-daemon",
+    "native:ios:pods": "cd ios && bundle exec pod install",
+    "native:ios:build": "xcodebuild -workspace ios/ReactNative3DKitExample.xcworkspace -configuration Debug -scheme ReactNative3DKitExample -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build/ci ARCHS=$(uname -m) ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO CODE_SIGNING_ALLOWED=NO build",
     "start": "react-native start",
     "test": "jest --runInBand",
     "typecheck": "tsc --noEmit"

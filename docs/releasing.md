@@ -63,9 +63,14 @@ and validates their public imports with TypeScript.
 Native example checks should also run before release:
 
 ```sh
-pnpm example:android
-pnpm example:ios
+pnpm native:android:build
+pnpm native:ios:pods
+pnpm native:ios:build
 ```
+
+After both build gates pass, complete the runtime smoke test in
+[`native-validation.md`](./native-validation.md) on an iOS Simulator or device
+and an Android emulator or device.
 
 ## Manual first publish
 

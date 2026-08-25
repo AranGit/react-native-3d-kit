@@ -23,7 +23,10 @@
     "release": "pnpm format:check && pnpm validate && pnpm pack:check && changeset publish",
     "example:start": "pnpm --filter react-native-3d-kit-example start",
     "example:ios": "pnpm --filter react-native-3d-kit-example ios",
-    "example:android": "pnpm --filter react-native-3d-kit-example android"
+    "example:android": "pnpm --filter react-native-3d-kit-example android",
+    "native:android:build": "pnpm --filter react-native-3d-kit-example native:android:build",
+    "native:ios:pods": "pnpm --filter react-native-3d-kit-example native:ios:pods",
+    "native:ios:build": "pnpm --filter react-native-3d-kit-example native:ios:build"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",

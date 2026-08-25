@@ -33,7 +33,7 @@ const mockCameraController = {
   begin: jest.fn(async () => undefined),
   update: jest.fn(async () => undefined),
   end: jest.fn(async () => undefined),
-  zoom: jest.fn(async () => undefined),
+  zoom: jest.fn(async (_x: number, _y: number, _delta: number) => undefined),
   getLookAt: jest.fn(async () => null),
 };
 const mockViewer = {
@@ -160,6 +160,81 @@ describe('OrbitControls', () => {
     expect(mockCameraController.begin).toHaveBeenCalledWith(0, 240, 'rotate');
     expect(mockCameraController.update).toHaveBeenCalledWith(10, 235);
     expect(mockCameraController.end).toHaveBeenCalledTimes(1);
+  });
+
+  it('scales two-finger pan and configures its pointer requirement', () => {
+    render(<OrbitControls enablePan orbitSpeed={0.006} />);
+    const { pan } = latestGestures();
+
+    expect(pan.minimumPointers).toBe(2);
+    expect(pan.isEnabled).toBe(true);
+    pan.begin?.();
+    pan.update?.({
+      translationX: 4,
+      translationY: 5,
+      scale: 1,
+      focalX: 0,
+      focalY: 0,
+    });
+    pan.finalize?.();
+
+    expect(mockCameraController.begin).toHaveBeenCalledWith(0, 240, 'pan');
+    expect(mockCameraController.update).toHaveBeenCalledWith(8, 230);
+    expect(mockCameraController.end).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses incremental pinch deltas and balances overlapping interactions', () => {
+    const onInteractionStart = jest.fn();
+    const onInteractionEnd = jest.fn();
+    render(
+      <OrbitControls
+        onInteractionEnd={onInteractionEnd}
+        onInteractionStart={onInteractionStart}
+        zoomSpeed={0.02}
+      />,
+    );
+    const { pinch, rotate } = latestGestures();
+
+    rotate.begin?.();
+    pinch.begin?.();
+    pinch.update?.({
+      translationX: 0,
+      translationY: 0,
+      scale: 1.2,
+      focalX: 40,
+      focalY: 60,
+    });
+    pinch.update?.({
+      translationX: 0,
+      translationY: 0,
+      scale: 1.5,
+      focalX: 42,
+      focalY: 62,
+    });
+    rotate.finalize?.();
+
+    expect(onInteractionStart).toHaveBeenCalledTimes(1);
+    expect(onInteractionEnd).not.toHaveBeenCalled();
+    expect(mockCameraController.zoom.mock.calls[0]?.slice(0, 2)).toEqual([
+      40, 180,
+    ]);
+    expect(mockCameraController.zoom.mock.calls[0]?.[2]).toBeCloseTo(-40);
+    expect(mockCameraController.zoom.mock.calls[1]?.slice(0, 2)).toEqual([
+      42, 178,
+    ]);
+    expect(mockCameraController.zoom.mock.calls[1]?.[2]).toBeCloseTo(-60);
+
+    pinch.finalize?.();
+    expect(onInteractionEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('honors individual gesture toggles', () => {
+    render(<OrbitControls enablePan enableRotate={false} enableZoom={false} />);
+    const gestures = latestGestures();
+
+    expect(gestures.rotate.isEnabled).toBe(false);
+    expect(gestures.pan.isEnabled).toBe(true);
+    expect(gestures.pinch.isEnabled).toBe(false);
   });
 
   it('delegates imperative reset to ModelViewer', () => {

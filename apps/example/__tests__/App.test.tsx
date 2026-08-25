@@ -2,12 +2,9 @@ import { fireEvent, render } from '@testing-library/react-native';
 import App from '../App';
 
 jest.mock('react-native-safe-area-context', () => {
-  const ReactNative = require('react-native') as typeof import('react-native');
   return {
     SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
-    SafeAreaView: ({ children }: { children: React.ReactNode }) => (
-      <ReactNative.View>{children}</ReactNative.View>
-    ),
+    useSafeAreaInsets: () => ({ bottom: 0, left: 0, right: 0, top: 0 }),
   };
 });
 

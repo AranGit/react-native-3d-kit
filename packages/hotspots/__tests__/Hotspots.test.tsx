@@ -1,5 +1,5 @@
 import { Text, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
-import { fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
 import { Hotspot, HotspotLayer } from '../src';
 import { resolveHotspotProjection } from '../src/projection';
 
@@ -138,6 +138,47 @@ describe('HotspotLayer and Hotspot', () => {
     expect(screen.getByTestId('custom-content').props.children).toBe('idle');
     fireEvent.press(screen.getByLabelText('custom'));
     expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('reprojects registered hotspots and unsubscribes on unmount', () => {
+    const screen = render(
+      <HotspotLayer>
+        <Hotspot id="moving" position={[10, 20, 0]} />
+      </HotspotLayer>,
+    );
+
+    expect(mockListeners.size).toBe(1);
+    mockViewer.projectWorldToScreen.mockImplementation(([x, y]) => ({
+      x: x + 7,
+      y: y - 4,
+    }));
+    act(() => {
+      mockListeners.forEach((listener) => listener());
+    });
+
+    expect(transformFor(screen.getByTestId('hotspot-moving'))).toEqual([
+      { translateX: 17 },
+      { translateY: 16 },
+    ]);
+
+    screen.unmount();
+    expect(mockListeners.size).toBe(0);
+  });
+
+  it('rejects duplicate hotspot ids in one layer', () => {
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    expect(() =>
+      render(
+        <HotspotLayer>
+          <Hotspot id="duplicate" position={[10, 20, 0]} />
+          <Hotspot id="duplicate" position={[30, 40, 0]} />
+        </HotspotLayer>,
+      ),
+    ).toThrow('Hotspot id "duplicate" is already registered');
+    consoleError.mockRestore();
   });
 
   it('throws helpful errors for missing providers', () => {
