@@ -61,3 +61,42 @@ it('switches between all three workspace package examples', () => {
   expect(screen.getByText('Top corner')).toBeTruthy();
   expect(screen.getByText('Lower edge')).toBeTruthy();
 });
+
+it('switches models and keeps the selection across examples', () => {
+  const screen = render(<App />);
+  const vertexCubeOption = screen.getByLabelText('Use Vertex cube model');
+  const italjetOption = screen.getByLabelText('Use Italjet model');
+
+  expect(vertexCubeOption.props.accessibilityState.checked).toBe(true);
+  expect(italjetOption.props.accessibilityState.checked).toBe(false);
+  expect(screen.queryByLabelText('Use UV layout model')).toBeNull();
+
+  fireEvent.press(italjetOption);
+
+  expect(
+    screen.getByLabelText('Use Vertex cube model').props.accessibilityState
+      .checked,
+  ).toBe(false);
+  expect(
+    screen.getByLabelText('Use Italjet model').props.accessibilityState.checked,
+  ).toBe(true);
+
+  fireEvent.press(screen.getByText('Hotspots'));
+  expect(screen.getByText('Handlebars')).toBeTruthy();
+  expect(screen.getByText('Front wheel')).toBeTruthy();
+  expect(screen.queryByText('Top corner')).toBeNull();
+});
+
+it('provides model-specific hotspots for HORNET and house', () => {
+  const screen = render(<App />);
+
+  fireEvent.press(screen.getByText('Hotspots'));
+  fireEvent.press(screen.getByLabelText('Use HORNET model'));
+  expect(screen.getByText('Head')).toBeTruthy();
+  expect(screen.getByText('Needle')).toBeTruthy();
+
+  fireEvent.press(screen.getByLabelText('Use House model'));
+  expect(screen.getByText('House center')).toBeTruthy();
+  expect(screen.getByText('Roof')).toBeTruthy();
+  expect(screen.queryByText('Head')).toBeNull();
+});

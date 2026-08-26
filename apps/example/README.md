@@ -1,9 +1,9 @@
 # React Native 3D Kit example
 
 This bare React Native app is the native integration fixture for all three
-workspace packages. It demonstrates a local GLB viewer, orbit/zoom/reset
-controls, three projected interactive hotspots, loading/error fallbacks, and a
-small status/viewport developer panel.
+workspace packages. It demonstrates switching between local GLB models, a
+viewer, orbit/zoom/reset controls, model-specific projected hotspots,
+loading/error fallbacks, and a small status/viewport developer panel.
 
 ## Run from the monorepo root
 
@@ -40,8 +40,8 @@ same native dependencies, but Expo Go cannot load them.
 - `index.js` imports Gesture Handler before the app.
 - `src/App.tsx` uses `GestureHandlerRootView`.
 - Every package is imported by its public npm name through the pnpm workspace.
-- `assets/BoxVertexColors.glb` is the small CC0 Khronos fixture documented in
-  the root asset attribution record.
+- The local models and their separate licenses are documented in the root asset
+  attribution record.
 
 The packages are not published yet; this app is for local development and
 validation only.

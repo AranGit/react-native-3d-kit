@@ -1,24 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { ModelViewer, type Vector3 } from '@arangit/react-native-model-viewer';
+import { ModelViewer } from '@arangit/react-native-model-viewer';
 import { OrbitControls } from '@arangit/react-native-3d-controls';
 import { Hotspot, HotspotLayer } from '@arangit/react-native-3d-hotspots';
 import { DeveloperPanel } from '../components/DeveloperPanel';
 import { ErrorFallback, LoadingFallback } from '../components/ViewerFallbacks';
-import { SAMPLE_MODEL } from '../model';
+import type { ExampleProps } from '../model';
 
-const HOTSPOTS: ReadonlyArray<{
-  id: string;
-  label: string;
-  position: Vector3;
-}> = [
-  { id: 'origin', label: 'Origin', position: [0, 0, 0] },
-  { id: 'top', label: 'Top corner', position: [1, 1, 1] },
-  { id: 'edge', label: 'Lower edge', position: [1, 0, 1] },
-];
-
-export function HotspotsExample() {
+export function HotspotsExample({ model }: ExampleProps) {
   const [selected, setSelected] = useState('Tap a hotspot');
+
+  useEffect(() => {
+    setSelected('Tap a hotspot');
+  }, [model.id]);
 
   return (
     <View style={styles.container}>
@@ -27,12 +21,12 @@ export function HotspotsExample() {
         backgroundColor="#101722"
         errorFallback={ErrorFallback}
         loadingFallback={<LoadingFallback />}
-        source={SAMPLE_MODEL}
+        source={model.source}
         style={styles.viewer}
       >
         <OrbitControls />
         <HotspotLayer>
-          {HOTSPOTS.map((hotspot, index) => (
+          {model.hotspots.map((hotspot, index) => (
             <Hotspot
               id={hotspot.id}
               key={hotspot.id}

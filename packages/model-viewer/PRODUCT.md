@@ -20,7 +20,7 @@ The package is a narrow composable layer on top of `react-native-filament`, not 
 
 ## Operating Context
 
-Applications render `ModelViewer` with a local or supported Filament buffer source, then place React Native overlays as children. Optional controls and hotspots consume the viewer context without importing implementation files. Changing `source` keys a new viewer instance so model, camera, and error-boundary state do not leak across sources.
+Applications render `ModelViewer` with a local or supported Filament buffer source, then place React Native overlays as children. Optional controls and hotspots consume the viewer context without importing implementation files. Changing `source` replaces the model-specific subtree while retaining the native Filament scene and surface; model state and error state are reset without paying the cost of rebuilding the renderer.
 
 ## Capabilities and Constraints
 

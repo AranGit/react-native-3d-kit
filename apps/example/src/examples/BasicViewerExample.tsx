@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ModelViewer } from '@arangit/react-native-model-viewer';
 import { DeveloperPanel } from '../components/DeveloperPanel';
 import { ErrorFallback, LoadingFallback } from '../components/ViewerFallbacks';
-import { SAMPLE_MODEL } from '../model';
+import type { ExampleProps } from '../model';
 
-export function BasicViewerExample() {
+export function BasicViewerExample({ model }: ExampleProps) {
   return (
     <View style={styles.container}>
       <ModelViewer
@@ -12,7 +12,7 @@ export function BasicViewerExample() {
         backgroundColor="#101722"
         errorFallback={ErrorFallback}
         loadingFallback={<LoadingFallback />}
-        source={SAMPLE_MODEL}
+        source={model.source}
         style={styles.viewer}
       >
         <View pointerEvents="none" style={styles.caption}>

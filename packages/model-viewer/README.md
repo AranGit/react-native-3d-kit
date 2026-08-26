@@ -58,6 +58,11 @@ The ref exposes `resetCamera()`, `fitToModel()`, and
 viewport, the narrow camera controller needed by plugins, and projection update
 subscription. Calling the hook outside a viewer throws a helpful error.
 
+`loading` and the loading fallback remain active while the asset is prepared,
+added to the scene, and auto-fitted. `loaded` and `onLoad` are reported only
+after the prepared model has participated in the Filament render loop, avoiding
+a parse-ready state that precedes visible scene output.
+
 ## Boundaries
 
 React Native Filament 1.11 logs asynchronous asset-read failures internally, so

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ModelViewer } from '@arangit/react-native-model-viewer';
 import {
@@ -7,11 +7,15 @@ import {
 } from '@arangit/react-native-3d-controls';
 import { DeveloperPanel } from '../components/DeveloperPanel';
 import { ErrorFallback, LoadingFallback } from '../components/ViewerFallbacks';
-import { SAMPLE_MODEL } from '../model';
+import type { ExampleProps } from '../model';
 
-export function ControlsExample() {
+export function ControlsExample({ model }: ExampleProps) {
   const controlsRef = useRef<OrbitControlsHandle>(null);
   const [interacting, setInteracting] = useState(false);
+
+  useEffect(() => {
+    setInteracting(false);
+  }, [model.id]);
 
   return (
     <View style={styles.container}>
@@ -20,7 +24,7 @@ export function ControlsExample() {
         backgroundColor="#111722"
         errorFallback={ErrorFallback}
         loadingFallback={<LoadingFallback />}
-        source={SAMPLE_MODEL}
+        source={model.source}
         style={styles.viewer}
       >
         <OrbitControls

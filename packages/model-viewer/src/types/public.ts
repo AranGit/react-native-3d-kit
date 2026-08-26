@@ -15,6 +15,10 @@ export interface ModelBounds {
   halfExtent: Vector3;
 }
 
+/**
+ * `loaded` means the prepared asset has participated in the Filament render
+ * loop, not merely that its GLB resources have finished parsing.
+ */
 export type ModelViewerStatus = 'loading' | 'loaded' | 'error';
 
 export interface ModelViewerLoadEvent {
@@ -66,6 +70,7 @@ export interface ModelViewerProps extends Omit<
   autoFit?: boolean;
   loadingFallback?: ReactNode;
   errorFallback?: (props: ModelViewerErrorFallbackProps) => ReactNode;
+  /** Called when `status` transitions to `loaded`. */
   onLoad?: (event: ModelViewerLoadEvent) => void;
   onError?: (error: Error) => void;
   children?: ReactNode;

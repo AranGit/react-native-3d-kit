@@ -46,10 +46,17 @@ stable capabilities—status, viewport size, camera commands, projection,
 reset/fit, and a narrow projection-change subscription—rather than leaking the
 raw Filament context.
 
-Changing `source` changes the keyed viewer instance. This disposes the old
-Filament subtree through React Native Filament's normal hook/component lifecycle
-and prevents the previous model state, camera, or error boundary from leaking
-into the next source.
+Changing `source` keys only the model-specific subtree. React Native Filament's
+normal hook lifecycle disposes the old asset, while the `FilamentScene`, native
+surface, swapchain, view, and default lighting stay mounted. Camera auto-fit and
+the error boundary reset for the new source without rebuilding the renderer.
+
+The upstream `useModel().state` becomes `loaded` after synchronous resource
+preparation but before later scene/render work is observable. The viewer keeps
+its public status at `loading` until the prepared asset has participated in the
+Filament render loop. The loading fallback therefore covers the gap between
+resource preparation and visible scene output, and `onLoad` follows the same
+transition.
 
 ## Camera controls
 

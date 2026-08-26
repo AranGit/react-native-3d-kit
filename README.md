@@ -159,8 +159,9 @@ bundle exec pod install
 The workspace uses pnpm's hoisted linker because React Native CocoaPods scripts
 need real filesystem paths when resolving native package roots.
 
-The example is a bare React Native app and contains a 1.9 KB CC0 GLB fixture.
-See [asset attribution](./docs/assets.md).
+The example is a bare React Native app and contains local GLB fixtures that can
+be switched at runtime. See [asset attribution](./docs/assets.md) for their
+separate licenses and provenance.
 
 ## Development
 

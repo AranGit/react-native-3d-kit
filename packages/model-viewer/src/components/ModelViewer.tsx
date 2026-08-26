@@ -69,6 +69,14 @@ const ModelViewerInstance = forwardRef<ModelViewerHandle, ModelViewerProps>(
     const listenersRef = useRef(new Set<() => void>());
     const animationFrameRef = useRef<number | null>(null);
     const loadedSourceKeyRef = useRef<string | null>(null);
+    const activeSourceKeyRef = useRef(sourceKey);
+    activeSourceKeyRef.current = sourceKey;
+
+    const previousSourceKeyRef = useRef(sourceKey);
+    if (previousSourceKeyRef.current !== sourceKey) {
+      previousSourceKeyRef.current = sourceKey;
+      boundsRef.current = null;
+    }
 
     const notifyProjectionUpdates = useCallback(() => {
       if (animationFrameRef.current !== null) {
@@ -131,23 +139,36 @@ const ModelViewerInstance = forwardRef<ModelViewerHandle, ModelViewerProps>(
       [fitToModel, projectWorldToScreen, resetCamera],
     );
 
-    const handleLoaded = useCallback(
+    const handlePrepared = useCallback(
       (bounds: ModelBounds) => {
+        if (activeSourceKeyRef.current !== sourceKey) {
+          return;
+        }
         boundsRef.current = bounds;
-        setStatusState({ sourceKey, status: 'loaded', error: null });
 
         if (autoFit) {
           applyFit(bounds);
         }
 
-        if (loadedSourceKeyRef.current !== sourceKey) {
-          loadedSourceKeyRef.current = sourceKey;
-          onLoad?.({ source, bounds });
-        }
         notifyProjectionUpdates();
       },
-      [applyFit, autoFit, notifyProjectionUpdates, onLoad, source, sourceKey],
+      [applyFit, autoFit, notifyProjectionUpdates, sourceKey],
     );
+
+    const handleRendered = useCallback(() => {
+      const bounds = boundsRef.current;
+      if (activeSourceKeyRef.current !== sourceKey || bounds === null) {
+        return;
+      }
+
+      setStatusState({ sourceKey, status: 'loaded', error: null });
+
+      if (loadedSourceKeyRef.current !== sourceKey) {
+        loadedSourceKeyRef.current = sourceKey;
+        onLoad?.({ source, bounds });
+      }
+      notifyProjectionUpdates();
+    }, [notifyProjectionUpdates, onLoad, source, sourceKey]);
 
     const handleError = useCallback(
       (error: Error) => {
@@ -222,8 +243,8 @@ const ModelViewerInstance = forwardRef<ModelViewerHandle, ModelViewerProps>(
           onLayout={handleLayout}
           style={[styles.container, { backgroundColor }, style]}
         >
-          <ModelViewerErrorBoundary key={sourceKey} onError={handleError}>
-            <FilamentScene key={sourceKey}>
+          <ModelViewerErrorBoundary onError={handleError} resetKey={sourceKey}>
+            <FilamentScene>
               <ModelViewerScene
                 source={source}
                 viewport={viewport}
@@ -231,8 +252,9 @@ const ModelViewerInstance = forwardRef<ModelViewerHandle, ModelViewerProps>(
                 cameraRevision={cameraRevision}
                 onCameraChange={notifyProjectionUpdates}
                 onControllerReady={handleControllerReady}
-                onLoaded={handleLoaded}
+                onPrepared={handlePrepared}
                 onProjectorReady={handleProjectorReady}
+                onRendered={handleRendered}
               />
             </FilamentScene>
           </ModelViewerErrorBoundary>
@@ -252,13 +274,7 @@ const ModelViewerInstance = forwardRef<ModelViewerHandle, ModelViewerProps>(
 
 export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
   function ModelViewerRoot(props, ref) {
-    return (
-      <ModelViewerInstance
-        key={getModelSourceKey(props.source)}
-        ref={ref}
-        {...props}
-      />
-    );
+    return <ModelViewerInstance ref={ref} {...props} />;
   },
 );
 

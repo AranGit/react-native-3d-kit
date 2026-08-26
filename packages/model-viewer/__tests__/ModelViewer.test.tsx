@@ -55,18 +55,57 @@ const mockManipulator = {
 const mockUseCameraManipulator = jest.fn(
   (_configuration: unknown) => mockManipulator,
 );
+type MockRenderCallback = (frameInfo: {
+  timestamp: number;
+  startTime: number;
+  passedSeconds: number;
+  timeSinceLastFrame: number;
+}) => void;
+const mockFilamentRenderCallbacks = new Set<MockRenderCallback>();
+let mockFilamentSceneMountCount = 0;
+let mockFilamentViewMountCount = 0;
+
+jest.mock('react-native-worklets-core', () => {
+  const React = require('react') as typeof import('react');
+
+  return {
+    useRunOnJS: (callback: (...args: unknown[]) => unknown) => callback,
+    useSharedValue: <Value,>(initialValue: Value) =>
+      React.useRef({ value: initialValue }).current,
+  };
+});
 
 jest.mock('react-native-filament', () => {
   const React = require('react') as typeof import('react');
   const ReactNative = require('react-native') as typeof import('react-native');
 
   return {
-    FilamentScene: ({ children }: { children: React.ReactNode }) => (
-      <ReactNative.View testID="filament-scene">{children}</ReactNative.View>
-    ),
-    FilamentView: ({ children }: { children: React.ReactNode }) => (
-      <ReactNative.View testID="filament-view">{children}</ReactNative.View>
-    ),
+    FilamentScene: ({ children }: { children: React.ReactNode }) => {
+      React.useEffect(() => {
+        mockFilamentSceneMountCount += 1;
+      }, []);
+      return (
+        <ReactNative.View testID="filament-scene">{children}</ReactNative.View>
+      );
+    },
+    FilamentView: ({ children }: { children: React.ReactNode }) => {
+      React.useEffect(() => {
+        mockFilamentViewMountCount += 1;
+      }, []);
+      return (
+        <ReactNative.View testID="filament-view">{children}</ReactNative.View>
+      );
+    },
+    RenderCallbackContext: {
+      useRenderCallback: (callback: MockRenderCallback) => {
+        React.useEffect(() => {
+          mockFilamentRenderCallbacks.add(callback);
+          return () => {
+            mockFilamentRenderCallbacks.delete(callback);
+          };
+        }, [callback]);
+      },
+    },
     DefaultLight: () => <ReactNative.View testID="filament-light" />,
     ModelRenderer: () => <ReactNative.View testID="filament-model" />,
     Camera: () => <ReactNative.View testID="filament-camera" />,
@@ -97,6 +136,21 @@ const loadedModel: MockModel = {
   },
 };
 
+function renderFilamentFrames(count = 2) {
+  act(() => {
+    for (let frame = 0; frame < count; frame += 1) {
+      mockFilamentRenderCallbacks.forEach((callback) =>
+        callback({
+          timestamp: frame * 16,
+          startTime: 0,
+          passedSeconds: frame * 0.016,
+          timeSinceLastFrame: 0.016,
+        }),
+      );
+    }
+  });
+}
+
 function StatusProbe() {
   const { status, viewport } = useModelViewer();
   return (
@@ -122,6 +176,9 @@ describe('ModelViewer', () => {
     mockRuntime.model = { state: 'loading' };
     mockRuntime.error = null;
     mockRuntime.view.projectWorldToScreen.mockClear();
+    mockFilamentRenderCallbacks.clear();
+    mockFilamentSceneMountCount = 0;
+    mockFilamentViewMountCount = 0;
     jest.clearAllMocks();
   });
 
@@ -143,7 +200,7 @@ describe('ModelViewer', () => {
     ).toBeNull();
   });
 
-  it('reports loaded state and viewport dimensions', async () => {
+  it('reports loaded only after the model participates in rendered frames', async () => {
     mockRuntime.model = loadedModel;
     const onLoad = jest.fn();
     const screen = render(
@@ -159,6 +216,19 @@ describe('ModelViewer', () => {
     fireEvent(screen.getByTestId('viewer'), 'layout', {
       nativeEvent: { layout: { width: 320, height: 240, x: 0, y: 0 } },
     });
+
+    expect(screen.getByTestId('status-probe').props.children[0]).toBe(
+      'loading',
+    );
+    expect(onLoad).not.toHaveBeenCalled();
+
+    renderFilamentFrames(1);
+    expect(screen.getByTestId('status-probe').props.children[0]).toBe(
+      'loading',
+    );
+    expect(onLoad).not.toHaveBeenCalled();
+
+    renderFilamentFrames(1);
 
     await waitFor(() => {
       expect(screen.getByTestId('status-probe').props.children).toEqual([
@@ -179,6 +249,7 @@ describe('ModelViewer', () => {
         <StatusProbe />
       </ModelViewer>,
     );
+    renderFilamentFrames();
     await waitFor(() =>
       expect(screen.getByTestId('status-probe').props.children[0]).toBe(
         'loaded',
@@ -197,6 +268,8 @@ describe('ModelViewer', () => {
         'loading',
       ),
     );
+    expect(mockFilamentSceneMountCount).toBe(1);
+    expect(mockFilamentViewMountCount).toBe(1);
   });
 
   it('projects safely only after layout is available', async () => {
@@ -228,6 +301,7 @@ describe('ModelViewer', () => {
         <StatusProbe />
       </ModelViewer>,
     );
+    renderFilamentFrames();
 
     await waitFor(() =>
       expect(screen.getByTestId('status-probe').props.children[0]).toBe(

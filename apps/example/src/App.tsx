@@ -8,6 +8,11 @@ import {
 import { BasicViewerExample } from './examples/BasicViewerExample';
 import { ControlsExample } from './examples/ControlsExample';
 import { HotspotsExample } from './examples/HotspotsExample';
+import {
+  DEFAULT_EXAMPLE_MODEL,
+  EXAMPLE_MODELS,
+  type ExampleModelId,
+} from './model';
 
 const EXAMPLES = [
   { id: 'viewer', label: 'Viewer', component: BasicViewerExample },
@@ -19,9 +24,15 @@ function ExampleApp() {
   const insets = useSafeAreaInsets();
   const [activeId, setActiveId] =
     useState<(typeof EXAMPLES)[number]['id']>('viewer');
+  const [activeModelId, setActiveModelId] = useState<ExampleModelId>(
+    DEFAULT_EXAMPLE_MODEL.id,
+  );
   const ActiveExample =
     EXAMPLES.find((example) => example.id === activeId)?.component ??
     BasicViewerExample;
+  const activeModel =
+    EXAMPLE_MODELS.find((model) => model.id === activeModelId) ??
+    DEFAULT_EXAMPLE_MODEL;
 
   return (
     <GestureHandlerRootView style={styles.root}>
@@ -42,8 +53,40 @@ function ExampleApp() {
           </View>
         </View>
 
+        <View style={styles.modelBar}>
+          <Text style={styles.modelBarLabel}>MODEL</Text>
+          <View accessibilityRole="radiogroup" style={styles.modelOptions}>
+            {EXAMPLE_MODELS.map((model) => {
+              const active = model.id === activeModelId;
+              return (
+                <Pressable
+                  accessibilityLabel={`Use ${model.label} model`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: active }}
+                  key={model.id}
+                  onPress={() => setActiveModelId(model.id)}
+                  style={({ pressed }) => [
+                    styles.modelOption,
+                    active && styles.activeModelOption,
+                    pressed && styles.pressedModelOption,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.modelOptionLabel,
+                      active && styles.activeModelOptionLabel,
+                    ]}
+                  >
+                    {model.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
         <View style={styles.stage}>
-          <ActiveExample />
+          <ActiveExample model={activeModel} />
         </View>
 
         <View accessibilityRole="tablist" style={styles.tabs}>
@@ -116,6 +159,50 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '800',
     letterSpacing: 1,
+  },
+  modelBar: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    paddingBottom: 10,
+    paddingHorizontal: 18,
+  },
+  modelBarLabel: {
+    color: '#8491A7',
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+  },
+  modelOptions: {
+    backgroundColor: '#101722',
+    borderColor: '#263142',
+    borderRadius: 12,
+    borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 3,
+    padding: 3,
+  },
+  modelOption: {
+    alignItems: 'center',
+    borderRadius: 9,
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  activeModelOption: {
+    backgroundColor: '#263A36',
+  },
+  pressedModelOption: {
+    opacity: 0.7,
+  },
+  modelOptionLabel: {
+    color: '#8F9CAF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  activeModelOptionLabel: {
+    color: '#72E2AE',
   },
   stage: {
     borderColor: '#263142',

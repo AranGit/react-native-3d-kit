@@ -50,7 +50,7 @@ pnpm example:android
 Complete this checklist on both platforms:
 
 - Viewer opens without a red screen or native crash.
-- The local GLB reaches `LOADED` and reports a non-zero viewport.
+- Each local GLB can be selected, reaches `LOADED`, and reports a non-zero viewport.
 - Viewer, Controls, and Hotspots tabs can be selected repeatedly.
 - One-finger drag changes the camera and Reset camera restores its home view.
 - Pinch zoom and two-finger pan move the camera without leaving it stuck in an
