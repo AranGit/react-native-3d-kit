@@ -162,8 +162,13 @@ The workspace uses pnpm's hoisted linker because React Native CocoaPods scripts
 need real filesystem paths when resolving native package roots.
 
 The example is a bare React Native app and contains local GLB fixtures that can
-be switched at runtime. See [asset attribution](./docs/assets.md) for their
-separate licenses and provenance.
+be switched at runtime. Its AR tab uses ViroReact to place, move, resize,
+rotate, remove, and re-place a selected fixture on a detected floor or table.
+AR requires a physical ARKit or ARCore device; simulators and emulators cannot
+run the AR session. The private iOS example requires iOS 17.6 or newer because
+of its ViroKit binary; this does not change the public packages' compatibility
+ranges. See [asset attribution](./docs/assets.md) for the models' separate
+licenses and provenance.
 
 ## Development
 
@@ -192,10 +197,12 @@ a Changeset for user-visible package changes.
 
 ## MVP boundaries
 
-There is no AR, web renderer, physics, animation controller, multiple-model
-scene, material editor, model conversion, caching, screenshot API, depth
-occlusion, inertia, auto-rotation, or zoom-distance clamping in this release.
-These omissions keep the public API on documented Filament capabilities.
+The three published packages do not expose AR, a web renderer, physics,
+animation controllers, multiple-model scenes, material editing, model
+conversion, caching, screenshots, depth occlusion, inertia, auto-rotation, or
+zoom-distance clamping in this release. AR in the example is a separate
+app-level ViroReact integration. These boundaries keep the public package API
+on documented Filament capabilities.
 
 ## License
 

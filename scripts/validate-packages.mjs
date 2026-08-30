@@ -184,6 +184,7 @@ try {
       'react-native-worklets-core': '1.6.3',
     },
     devDependencies: {
+      '@types/node': '26.2.0',
       '@types/react': '19.2.0',
       typescript: '5.8.3',
     },

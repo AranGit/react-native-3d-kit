@@ -16,6 +16,7 @@ import {
 import { BasicViewerExample } from './examples/BasicViewerExample';
 import { ControlsExample } from './examples/ControlsExample';
 import { HotspotsExample } from './examples/HotspotsExample';
+import { ARPlacementExample } from './examples/ARPlacementExample';
 import { AppText as Text } from './components/AppText';
 import {
   DEFAULT_EXAMPLE_MODEL,
@@ -29,6 +30,7 @@ const EXAMPLES = [
   { id: 'viewer', label: 'Viewer', component: BasicViewerExample },
   { id: 'controls', label: 'Controls', component: ControlsExample },
   { id: 'hotspots', label: 'Hotspots', component: HotspotsExample },
+  { id: 'ar', label: 'AR', component: ARPlacementExample },
 ] as const;
 
 function ExampleApp() {

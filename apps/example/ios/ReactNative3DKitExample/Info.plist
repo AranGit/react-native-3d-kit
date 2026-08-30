@@ -33,8 +33,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<key>NSCameraUsageDescription</key>
+	<string>Use the camera to detect real surfaces and place 3D models. ใช้กล้องเพื่อตรวจจับพื้นผิวจริงและวางโมเดล 3 มิติ</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

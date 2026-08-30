@@ -74,10 +74,11 @@ pnpm native:ios:pods
 pnpm native:ios:build
 ```
 
-After both build gates pass, complete the runtime smoke test in
+After both build gates pass, complete the non-AR runtime smoke test in
 [`native-validation.md`](./native-validation.md) on an iOS Simulator or device
-and an Android emulator or device, then repeat the core install in a clean
-tarball consumer outside the monorepo.
+and an Android emulator or device. Complete its AR section on physical ARKit and
+ARCore hardware, then repeat the core install in a clean tarball consumer
+outside the monorepo.
 
 ## Manual first publish
 

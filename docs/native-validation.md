@@ -18,7 +18,9 @@ Build the Android debug APK:
 pnpm native:android:build
 ```
 
-Install iOS pods and build for a generic iOS Simulator without code signing:
+Install iOS pods and build for a generic physical-device target without code
+signing. ViroKit is device-only, so the deterministic iOS gate cannot target the
+Simulator:
 
 ```sh
 cd apps/example
@@ -53,7 +55,7 @@ Complete this checklist on both platforms:
 - Each local GLB can be selected, reaches `LOADED`, and reports a non-zero viewport.
 - Portrait and landscape keep every control outside notches, cutouts, the Dynamic
   Island, status bars, and navigation areas.
-- Viewer, Controls, and Hotspots tabs can be selected repeatedly.
+- Viewer, Controls, Hotspots, and AR tabs can be selected repeatedly.
 - One-finger drag changes the camera and Reset camera restores its home view.
 - Pinch zoom and two-finger pan move the camera without leaving it stuck in an
   interacting state.
@@ -69,6 +71,20 @@ Complete this checklist on both platforms:
 - Backgrounding, foregrounding, and one development reload keep the app usable.
 - Platform logs contain no new application fatal exception or unhandled JavaScript
   error.
+
+Complete these additional checks on a physical ARKit or ARCore device:
+
+- Use iOS 17.6 or newer for the iOS example; ViroKit 2.58.1 is built with that
+  deployment target.
+- Granting camera access starts tracking; denying it shows the bilingual retry
+  state without a native crash.
+- Scanning a floor or table highlights a horizontal surface, and tapping it
+  anchors the selected model.
+- Drag, pinch, and two-finger rotation update the placed model.
+- **Remove · ยกออก** removes the model, re-enables surface selection, and allows
+  the model to be placed again.
+- Switching models removes the previous anchor and places only the newly selected
+  model.
 
 Record the OS/runtime, device or simulator, commit, and any dependency warnings
 with the release notes. Treat third-party compiler warnings separately from

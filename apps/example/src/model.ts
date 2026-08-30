@@ -13,6 +13,7 @@ export interface ExampleModel {
   id: ExampleModelId;
   label: string;
   source: ModelSource;
+  arScale: number;
   hotspots: ReadonlyArray<ExampleModelHotspot>;
 }
 
@@ -24,6 +25,7 @@ const VERTEX_CUBE_MODEL: ExampleModel = {
   id: 'vertex-cube',
   label: 'Vertex cube',
   source: require('../assets/BoxVertexColors.glb') as ModelSource,
+  arScale: 0.25,
   hotspots: [
     { id: 'origin', label: 'Origin', position: [0, 0, 0] },
     { id: 'top', label: 'Top corner', position: [1, 1, 1] },
@@ -36,6 +38,7 @@ const ITALJET_DRAGSTER_MODEL: ExampleModel = {
   label: 'Italjet',
   source:
     require('../assets/2024_italjet_dragster_700_twin.glb') as ModelSource,
+  arScale: 0.45,
   hotspots: [
     { id: 'center', label: 'Bike center', position: [0, 0.3, 0] },
     { id: 'handlebars', label: 'Handlebars', position: [0, 0.76, -0.43] },
@@ -47,6 +50,7 @@ const HORNET_MODEL: ExampleModel = {
   id: 'hornet',
   label: 'HORNET',
   source: require('../assets/HORNET.glb') as ModelSource,
+  arScale: 0.45,
   hotspots: [
     { id: 'head', label: 'Head', position: [0, 0.84, 0] },
     { id: 'chest', label: 'Chest', position: [0, 0.67, -0.01] },
@@ -58,6 +62,7 @@ const HOUSE_MODEL: ExampleModel = {
   id: 'house',
   label: 'House',
   source: require('../assets/house.glb') as ModelSource,
+  arScale: 0.16,
   hotspots: [
     { id: 'center', label: 'House center', position: [-1.18, 1.5, 0] },
     { id: 'roof', label: 'Roof', position: [-1.18, 2.9, 0] },

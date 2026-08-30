@@ -1,10 +1,11 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import App from '../App';
 
 const mockRotateBy = jest.fn();
 const mockZoomBy = jest.fn();
 const mockReset = jest.fn();
+const mockRemoveARObject = jest.fn();
 
 jest.mock('react-native-safe-area-context', () => {
   return {
@@ -61,7 +62,64 @@ jest.mock('@arangit/react-native-3d-hotspots', () => {
   };
 });
 
-it('switches between all three workspace package examples', () => {
+jest.mock('@reactvision/react-viro', () => {
+  const React = require('react') as typeof import('react');
+  const ReactNative = require('react-native') as typeof import('react-native');
+
+  function ViroARSceneNavigator({
+    viroAppProps,
+  }: {
+    viroAppProps: {
+      onPlaced: () => void;
+      onRemoved: () => void;
+      onTrackingChange: (state: number, reason: number) => void;
+      registerScene: (scene: { removeObject: () => void } | null) => void;
+    };
+  }) {
+    React.useEffect(() => {
+      viroAppProps.onTrackingChange(3, 1);
+      viroAppProps.registerScene({
+        removeObject: () => {
+          mockRemoveARObject();
+          viroAppProps.onRemoved();
+        },
+      });
+      return () => viroAppProps.registerScene(null);
+    }, [viroAppProps]);
+
+    return (
+      <ReactNative.View testID="ar-scene-navigator">
+        <ReactNative.Pressable
+          accessibilityLabel="Simulate AR placement"
+          onPress={viroAppProps.onPlaced}
+        />
+      </ReactNative.View>
+    );
+  }
+
+  const NullViroComponent = () => null;
+
+  return {
+    isARSupportedOnDevice: jest.fn(async () => ({ isARSupported: true })),
+    requestRequiredPermissions: jest.fn(async () => ({ camera: true })),
+    Viro3DObject: NullViroComponent,
+    ViroAmbientLight: NullViroComponent,
+    ViroARPlaneSelector: NullViroComponent,
+    ViroARScene: NullViroComponent,
+    ViroARSceneNavigator,
+    ViroDirectionalLight: NullViroComponent,
+    ViroNode: NullViroComponent,
+    ViroPinchStateTypes: { PINCH_END: 3 },
+    ViroRotateStateTypes: { ROTATE_END: 3 },
+    ViroTrackingStateConstants: {
+      TRACKING_UNAVAILABLE: 1,
+      TRACKING_LIMITED: 2,
+      TRACKING_NORMAL: 3,
+    },
+  };
+});
+
+it('switches between the package examples and AR placement', async () => {
   const screen = render(<App />);
 
   expect(screen.getByText('Drag to rotate · pinch to zoom')).toBeTruthy();
@@ -75,6 +133,32 @@ it('switches between all three workspace package examples', () => {
   fireEvent.press(screen.getByText('Hotspots'));
   expect(screen.getByText('Roof')).toBeTruthy();
   expect(screen.getByText('Left side')).toBeTruthy();
+
+  fireEvent.press(screen.getByText('AR'));
+  expect(await screen.findByTestId('ar-scene-navigator')).toBeTruthy();
+  expect(
+    screen.getByText('Scan a floor or table · สแกนพื้นหรือโต๊ะ'),
+  ).toBeTruthy();
+});
+
+it('removes a placed model from the AR space', async () => {
+  mockRemoveARObject.mockClear();
+  const screen = render(<App />);
+
+  fireEvent.press(screen.getByText('AR'));
+  await screen.findByTestId('ar-scene-navigator');
+  fireEvent.press(screen.getByLabelText('Simulate AR placement'));
+
+  const removeButton = screen.getByLabelText('Remove model from AR space');
+  await waitFor(() =>
+    expect(removeButton.props.accessibilityState.disabled).toBe(false),
+  );
+  fireEvent.press(removeButton);
+
+  expect(mockRemoveARObject).toHaveBeenCalledTimes(1);
+  await waitFor(() =>
+    expect(removeButton.props.accessibilityState.disabled).toBe(true),
+  );
 });
 
 it('switches models and keeps the selection across examples', () => {
