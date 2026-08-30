@@ -24,7 +24,7 @@ Applications render `HotspotLayer` inside `ModelViewer`, then register labeled o
 
 ## Capabilities and Constraints
 
-- Supports multiple world-space hotspots, labels, custom content, offsets, press handling, hidden state, and disabled state.
+- Supports multiple world-space hotspots, labels, custom content, offsets, press handling, hidden state, disabled state, and measured edge clamping.
 - Coalesces projection updates through the viewer and avoids React state changes when projection results are unchanged.
 - Hides hotspots that are outside the viewport or have no loaded projection.
 - Targets native iOS and Android and requires `@arangit/react-native-model-viewer` within the validated compatibility matrix.

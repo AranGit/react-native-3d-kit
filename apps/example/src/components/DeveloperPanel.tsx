@@ -1,18 +1,50 @@
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { useModelViewer } from '@arangit/react-native-model-viewer';
+import { AppText as Text } from './AppText';
 
-export function DeveloperPanel() {
+interface DeveloperPanelProps {
+  style?: StyleProp<ViewStyle>;
+}
+
+export function DeveloperPanel({ style }: DeveloperPanelProps) {
   const { status, viewport } = useModelViewer();
+  const window = useWindowDimensions();
+  const compact = window.width > window.height;
 
   return (
-    <View pointerEvents="none" style={styles.panel} testID="developer-panel">
-      <Text style={styles.label}>MODEL</Text>
-      <Text style={styles.value}>{status.toUpperCase()}</Text>
-      <View style={styles.separator} />
-      <Text style={styles.label}>VIEWPORT</Text>
-      <Text style={styles.value}>
-        {Math.round(viewport.width)} × {Math.round(viewport.height)}
-      </Text>
+    <View
+      accessibilityLabel={`Model ${status}. Viewport ${Math.round(
+        viewport.width,
+      )} by ${Math.round(viewport.height)} points`}
+      accessibilityLiveRegion="polite"
+      accessibilityRole="text"
+      accessible
+      pointerEvents="none"
+      style={[styles.panel, style]}
+      testID="developer-panel"
+    >
+      {compact ? (
+        <Text numberOfLines={1} style={styles.value}>
+          {status.toUpperCase()} · {Math.round(viewport.width)} ×{' '}
+          {Math.round(viewport.height)}
+        </Text>
+      ) : (
+        <>
+          <Text style={styles.label}>MODEL</Text>
+          <Text style={styles.value}>{status.toUpperCase()}</Text>
+          <View style={styles.separator} />
+          <Text style={styles.label}>VIEWPORT</Text>
+          <Text style={styles.value}>
+            {Math.round(viewport.width)} × {Math.round(viewport.height)}
+          </Text>
+        </>
+      )}
     </View>
   );
 }
@@ -34,13 +66,13 @@ const styles = StyleSheet.create({
   },
   label: {
     color: '#8491A7',
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1,
   },
   value: {
     color: '#F4F7FB',
-    fontSize: 11,
+    fontSize: 12,
     fontVariant: ['tabular-nums'],
     fontWeight: '700',
   },

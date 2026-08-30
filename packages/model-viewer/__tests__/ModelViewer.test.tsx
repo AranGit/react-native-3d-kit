@@ -200,6 +200,23 @@ describe('ModelViewer', () => {
     ).toBeNull();
   });
 
+  it('adds an accessible description without grouping interactive overlays', () => {
+    const screen = render(
+      <ModelViewer
+        accessibilityHint="Use the controls to inspect it"
+        accessibilityLabel="Interactive 3D house"
+        source={{ uri: 'house.glb' }}
+      >
+        <Text accessibilityRole="button">Inspect roof</Text>
+      </ModelViewer>,
+    );
+
+    expect(
+      screen.getByLabelText('Interactive 3D house').props.accessibilityRole,
+    ).toBe('image');
+    expect(screen.getByRole('button')).toBeTruthy();
+  });
+
   it('reports loaded only after the model participates in rendered frames', async () => {
     mockRuntime.model = loadedModel;
     const onLoad = jest.fn();

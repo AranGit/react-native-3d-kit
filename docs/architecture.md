@@ -73,6 +73,11 @@ configuration. Filament 1.11 does not expose a setter for an exact look-at value
 distance bounds, or programmatic orbit, so min/max distance, inertia, damping,
 and auto-rotation are deliberately not advertised.
 
+The controls ref and hook can synthesize small rotate, pan, and zoom steps through
+the same manipulator commands used by gestures. These relative steps let host
+applications provide buttons, keyboard input, or assistive input without
+claiming an exact camera setter.
+
 ## Hotspot updates
 
 `HotspotLayer` owns one projection subscription for all registered hotspots.
@@ -82,6 +87,9 @@ actually change. This avoids a permanent per-render-frame React `setState` loop.
 
 `useHotspotProjection` is available for standalone custom overlays; a layer is
 preferred for multiple hotspots because it centralizes subscription work.
+After a hotspot measures its content, its visual center is clamped so the whole
+annotation remains inside the viewport padding while the original projected
+anchor continues to determine visibility.
 
 ## Peer dependency strategy
 
@@ -123,7 +131,7 @@ without a private API. This is a documented upstream boundary.
   camera flag. Hotspots are viewport-clipped, not depth-occluded.
 - No distance clamping, inertia, damping, or auto-rotation with the current
   documented manipulator surface.
-- No mesh/node entity anchoring, label collision avoidance, clustering, editor,
+- No mesh/node entity anchoring, label-to-label collision avoidance, clustering, editor,
   or persistence.
 - No animation controller, model caching, screenshots, AR, physics, conversion,
   material editing, or web implementation.

@@ -2,6 +2,10 @@
 
 No package is published by this repository configuration automatically.
 
+The first public release baseline is `0.1.0`. Changes made before any package or
+tag exists are part of that baseline rather than a post-release Changeset. After
+`0.1.0` is published, every user-visible package change must include a Changeset.
+
 ## Prerequisites
 
 Before the first release, the repository owner must:
@@ -11,6 +15,8 @@ Before the first release, the repository owner must:
 2. Confirm ownership or publishing access for the public `@arangit` npm scope.
 3. Sign in locally with `npm login` and verify with `npm whoami`.
 4. Confirm each final package name with `npm view <package-name>`.
+5. Complete the activation study in [`beta-validation.md`](./beta-validation.md)
+   and resolve every release-blocking integration failure.
 
 Public scoped packages require `publishConfig.access: public`, which is already
 present in all three manifests.
@@ -70,7 +76,8 @@ pnpm native:ios:build
 
 After both build gates pass, complete the runtime smoke test in
 [`native-validation.md`](./native-validation.md) on an iOS Simulator or device
-and an Android emulator or device.
+and an Android emulator or device, then repeat the core install in a clean
+tarball consumer outside the monorepo.
 
 ## Manual first publish
 

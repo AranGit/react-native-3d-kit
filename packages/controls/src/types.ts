@@ -3,6 +3,12 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 export interface OrbitControlsHandle {
   reset(): void;
+  /** Applies a small orbit step using the same camera manipulator as gestures. */
+  rotateBy(deltaX: number, deltaY?: number): void;
+  /** Applies a small pan step using the same camera manipulator as gestures. */
+  panBy(deltaX: number, deltaY?: number): void;
+  /** Applies a zoom step around the center of the viewport. */
+  zoomBy(delta: number): void;
 }
 
 export interface OrbitControlsProps {

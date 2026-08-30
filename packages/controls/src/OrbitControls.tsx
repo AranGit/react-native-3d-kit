@@ -8,6 +8,7 @@ import {
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useModelViewer } from '@arangit/react-native-model-viewer';
+import { createOrbitControlsHandle, runCameraCommand } from './cameraCommands';
 import type { OrbitControlsHandle, OrbitControlsProps } from './types';
 
 const DEFAULT_ORBIT_SPEED = 0.003;
@@ -17,12 +18,6 @@ function assertPositiveFinite(value: number, name: string): void {
   if (!Number.isFinite(value) || value <= 0) {
     throw new RangeError(`${name} must be a finite number greater than zero.`);
   }
-}
-
-function runCameraCommand(command: Promise<unknown> | undefined): void {
-  command?.catch((error: unknown) => {
-    console.error('[react-native-3d-controls] Camera command failed.', error);
-  });
 }
 
 export const OrbitControls = forwardRef<
@@ -49,7 +44,11 @@ export const OrbitControls = forwardRef<
   const activeInteractionsRef = useRef(0);
   const previousPinchScaleRef = useRef(1);
 
-  useImperativeHandle(ref, () => ({ reset: resetCamera }), [resetCamera]);
+  useImperativeHandle(
+    ref,
+    () => createOrbitControlsHandle(cameraController, resetCamera, viewport),
+    [cameraController, resetCamera, viewport],
+  );
 
   const beginInteraction = useCallback(() => {
     if (activeInteractionsRef.current === 0) {

@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   Pressable,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -11,16 +12,37 @@ import { areHotspotProjectionsEqual } from './projection';
 import type { HotspotProjectionResult, HotspotProps } from './types';
 
 const ZERO_OFFSET = [0, 0] as const;
+const MIN_TOUCH_TARGET = Platform.OS === 'android' ? 48 : 44;
 const HIDDEN_PROJECTION: HotspotProjectionResult = {
   screenPosition: null,
   visible: false,
 };
+
+function clampToViewport(
+  position: number,
+  contentSize: number,
+  viewportSize: number,
+  edgePadding: number,
+): number {
+  if (contentSize === 0 || viewportSize <= 0) {
+    return position;
+  }
+  if (contentSize + edgePadding * 2 >= viewportSize) {
+    return viewportSize / 2;
+  }
+  const halfSize = contentSize / 2;
+  return Math.min(
+    Math.max(position, edgePadding + halfSize),
+    viewportSize - edgePadding - halfSize,
+  );
+}
 
 export function Hotspot({
   id,
   position,
   label,
   offset = ZERO_OFFSET,
+  edgePadding = 8,
   hidden = false,
   disabled = false,
   onPress,
@@ -28,12 +50,18 @@ export function Hotspot({
   style,
   testID,
 }: HotspotProps) {
+  if (!Number.isFinite(edgePadding) || edgePadding < 0) {
+    throw new RangeError(
+      'edgePadding must be a finite number of zero or more.',
+    );
+  }
   const layer = useContext(HotspotLayerContext);
   if (layer === undefined) {
     throw new Error(
       'Hotspot must be rendered inside an @arangit/react-native-3d-hotspots <HotspotLayer>.',
     );
   }
+  const { viewport } = layer;
 
   const [projection, setProjection] =
     useState<HotspotProjectionResult>(HIDDEN_PROJECTION);
@@ -71,6 +99,20 @@ export function Hotspot({
     !hidden && projection.visible && projection.screenPosition !== null;
   const x = projection.screenPosition?.x ?? 0;
   const y = projection.screenPosition?.y ?? 0;
+  const halfWidth = contentSize.width / 2;
+  const halfHeight = contentSize.height / 2;
+  const clampedX = clampToViewport(
+    x,
+    contentSize.width,
+    viewport.width,
+    edgePadding,
+  );
+  const clampedY = clampToViewport(
+    y,
+    contentSize.height,
+    viewport.height,
+    edgePadding,
+  );
 
   return (
     <View
@@ -83,8 +125,8 @@ export function Hotspot({
         isVisible ? styles.visible : styles.hidden,
         {
           transform: [
-            { translateX: x - contentSize.width / 2 },
-            { translateY: y - contentSize.height / 2 },
+            { translateX: clampedX - halfWidth },
+            { translateY: clampedY - halfHeight },
           ],
         },
         style,
@@ -92,6 +134,7 @@ export function Hotspot({
       testID={testID ?? `hotspot-${id}`}
     >
       <Pressable
+        accessibilityHint="Activates this model annotation"
         accessibilityLabel={label ?? id}
         accessibilityRole="button"
         accessibilityState={{ disabled }}
@@ -133,8 +176,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     gap: 6,
+    justifyContent: 'center',
+    minHeight: MIN_TOUCH_TARGET,
+    minWidth: MIN_TOUCH_TARGET,
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   dot: {
     backgroundColor: '#72E2AE',

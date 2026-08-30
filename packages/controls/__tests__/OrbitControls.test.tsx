@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { render } from '@testing-library/react-native';
+import { act, render } from '@testing-library/react-native';
 import { OrbitControls, type OrbitControlsHandle } from '../src';
 
 interface MockGestureBuilder {
@@ -244,6 +244,34 @@ describe('OrbitControls', () => {
     ref.current?.reset();
 
     expect(mockResetCamera).toHaveBeenCalledTimes(1);
+  });
+
+  it('provides imperative camera steps as a non-gesture alternative', async () => {
+    const ref = createRef<OrbitControlsHandle>();
+    render(<OrbitControls ref={ref} />);
+
+    await act(async () => {
+      ref.current?.rotateBy(24, -12);
+      await Promise.resolve();
+    });
+    expect(mockCameraController.begin).toHaveBeenCalledWith(160, 120, 'rotate');
+    expect(mockCameraController.update).toHaveBeenCalledWith(184, 108);
+    expect(mockCameraController.end).toHaveBeenCalledTimes(1);
+
+    ref.current?.zoomBy(-20);
+    expect(mockCameraController.zoom).toHaveBeenCalledWith(160, 120, -20);
+  });
+
+  it('rejects non-finite imperative camera steps', () => {
+    const ref = createRef<OrbitControlsHandle>();
+    render(<OrbitControls ref={ref} />);
+
+    expect(() => ref.current?.rotateBy(Number.NaN)).toThrow(
+      'deltaX must be a finite number',
+    );
+    expect(() => ref.current?.zoomBy(Number.POSITIVE_INFINITY)).toThrow(
+      'delta must be a finite number',
+    );
   });
 
   it.each([

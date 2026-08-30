@@ -62,8 +62,10 @@ function assertManifest(manifest, archivePath) {
   if (manifest.private === true) {
     throw new Error(`${archivePath}: publishable package is private.`);
   }
-  if (manifest.version !== '0.1.0') {
-    throw new Error(`${archivePath}: expected version 0.1.0.`);
+  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(manifest.version)) {
+    throw new Error(
+      `${archivePath}: invalid package version ${manifest.version}.`,
+    );
   }
   if (manifest.publishConfig?.access !== 'public') {
     throw new Error(`${archivePath}: publishConfig.access must be public.`);
@@ -152,6 +154,17 @@ for (const relativeDirectory of packageDirectories) {
   const manifest = validateArchive(archivePath);
   archives.push({ archivePath, manifest });
   process.stdout.write(`validated ${manifest.name}@${manifest.version}\n`);
+}
+
+const packedVersions = new Set(
+  archives.map(({ manifest }) => manifest.version),
+);
+if (packedVersions.size !== 1) {
+  throw new Error(
+    `Fixed package group has inconsistent versions: ${[...packedVersions].join(
+      ', ',
+    )}.`,
+  );
 }
 
 const consumerDirectory = mkdtempSync(join(tmpdir(), 'rn-3d-consumer-'));

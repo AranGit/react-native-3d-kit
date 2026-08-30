@@ -16,6 +16,8 @@ export interface HotspotProps {
   position: Vector3;
   label?: string;
   offset?: PixelOffset;
+  /** Minimum distance, in points, between hotspot content and the viewport edge. */
+  edgePadding?: number;
   hidden?: boolean;
   disabled?: boolean;
   onPress?: () => void;

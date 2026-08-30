@@ -112,6 +112,8 @@ function Status() {
 export function ProductPreview() {
   return (
     <ModelViewer
+      accessibilityHint="Use camera controls and hotspots to inspect the model"
+      accessibilityLabel="Interactive 3D product model"
       autoFit
       backgroundColor="#10131A"
       loadingFallback={<Text>Loading…</Text>}
@@ -180,7 +182,8 @@ pnpm validate
 
 Changes should include focused tests and a Changeset when they alter published
 behavior. See [architecture](./docs/architecture.md) and
-[releasing](./docs/releasing.md). Native changes should also follow the
+[releasing](./docs/releasing.md). Validate product activation with the
+[beta plan](./docs/beta-validation.md). Native changes should also follow the
 [build and runtime validation checklist](./docs/native-validation.md).
 
 Contributions should branch from `main`, keep the package dependency direction

@@ -9,6 +9,7 @@ export interface HotspotRegistration {
 }
 
 export interface HotspotLayerContextValue {
+  viewport: { width: number; height: number };
   register(id: string, registration: HotspotRegistration): () => void;
 }
 

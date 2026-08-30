@@ -33,6 +33,9 @@ const controlsRef = useRef<OrbitControlsHandle>(null);
 </ModelViewer>;
 
 controlsRef.current?.reset();
+controlsRef.current?.rotateBy(-48);
+controlsRef.current?.panBy(0, 24);
+controlsRef.current?.zoomBy(-20);
 ```
 
 ## Public API
@@ -46,6 +49,11 @@ One finger orbits, pinch zooms, and optional two-finger pan uses Filament orbit
 strafe mode. `enabled={false}` disables recognizers and pointer interception.
 Rotation, zoom, and pan can be toggled independently. Speed values must be finite
 and greater than zero.
+
+The ref and `useOrbitControls()` expose `rotateBy`, `panBy`, `zoomBy`, and
+`reset`. These incremental commands use the same camera manipulator as gestures
+and are intended for accessible buttons, keyboard input, and other alternate
+controls. They are relative steps, not exact camera setters.
 
 The documented React Native Filament 1.11 manipulator has no exact camera setter,
 distance bounds, or programmatic orbit. Consequently this MVP does not pretend

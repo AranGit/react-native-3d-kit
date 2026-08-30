@@ -24,7 +24,8 @@ Developers run the app locally from the pnpm monorepo with Metro and either the 
 
 ## Capabilities and Constraints
 
-- Demonstrates GLB loading and switching, loading and observable error fallbacks, camera status, viewport reporting, orbit and pinch controls, reset, and interactive projected hotspots.
+- Opens with the House controls example so the first screen reads immediately as interactive 3D.
+- Demonstrates GLB loading and switching, loading and observable error fallbacks, camera status, viewport reporting, orbit and pinch controls, reset, incremental non-gesture camera controls, and interactive projected hotspots.
 - Uses bare React Native 0.83.10 with the New Architecture and the compatibility versions recorded in the root README.
 - Targets native iOS and Android. Expo Development Build or prebuild may integrate the same dependencies; Expo Go cannot.
 - Uses one GLB model at a time and inherits the pre-1.0 package boundaries documented in the repository.
@@ -52,4 +53,4 @@ Preserve the product name “React Native 3D Kit,” the `@arangit` package name
 
 ## Accessibility & Inclusion
 
-Preserve React Native accessibility roles and selected states for example navigation. Interactive package examples should expose meaningful labels and disabled states where their public APIs permit it.
+Preserve React Native accessibility roles and selected states for example navigation. Interactive package examples should expose meaningful labels, disabled states, platform-appropriate touch targets, safe-area handling in both orientations, and non-gesture camera alternatives.

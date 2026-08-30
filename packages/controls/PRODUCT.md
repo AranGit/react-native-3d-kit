@@ -25,6 +25,7 @@ The package controls the base viewer exclusively through its narrow public conte
 ## Capabilities and Constraints
 
 - One-finger pan drives orbit rotation; pinch drives zoom; optional two-finger pan uses Filament orbit strafe mode.
+- The ref and hook expose incremental rotate, pan, zoom, and reset commands so hosts can provide buttons, keyboard input, or other non-gesture controls.
 - Requires `@arangit/react-native-model-viewer` and `react-native-gesture-handler` within the validated compatibility matrix.
 - Targets native iOS and Android; Expo Go cannot load the required native dependencies.
 - The documented Filament 1.11 manipulator does not provide an exact camera setter, distance bounds, or programmatic orbit.
@@ -52,4 +53,4 @@ Preserve the package name `@arangit/react-native-3d-controls` pending npm-scope 
 
 ## Accessibility & Inclusion
 
-The current public contract is gesture-led and does not document a complete non-gesture alternative for orbit, pan, or zoom. Programmatic reset is available, but broader accessibility controls remain an open product decision and must not be implied as shipped.
+The public contract supports incremental non-gesture camera steps, but host applications must still provide accessible controls, labels, focus order, and an equivalent description of the visual content. Exact camera positioning remains unsupported.

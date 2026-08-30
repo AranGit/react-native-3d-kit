@@ -52,6 +52,7 @@ export function HotspotLayer({
 
   const contextValue = useMemo(
     () => ({
+      viewport,
       register(id: string, registration: HotspotRegistration) {
         if (registrationsRef.current.has(id)) {
           throw new Error(
@@ -69,7 +70,7 @@ export function HotspotLayer({
         };
       },
     }),
-    [projectRegistration],
+    [projectRegistration, viewport],
   );
 
   return (

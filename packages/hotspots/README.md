@@ -19,6 +19,7 @@ pnpm add @arangit/react-native-3d-hotspots \
     <Hotspot
       id="entrance"
       label="Entrance"
+      edgePadding={8}
       offset={[0, -16]}
       onPress={() => {}}
       position={[1, 2, 0]}
@@ -45,6 +46,11 @@ coalesced by the viewer and unchanged projection state is preserved. Hotspots
 outside the viewport, or without a loaded projection, are hidden. `hidden`,
 `disabled`, custom content, labels, offsets, presses, and multiple hotspots are
 supported.
+
+After hotspot content is measured, its visual bounds are clamped to the viewer
+with 8 points of padding by default. Set `edgePadding` to a finite value of zero
+or more to tune that inset. The world-space anchor still determines visibility;
+the clamp keeps a visible annotation reachable near the screen edge.
 
 Projection in Filament 1.11 returns screen coordinates without depth. This MVP
 does not implement depth occlusion, behind-camera detection, mesh/node anchors,

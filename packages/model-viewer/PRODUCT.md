@@ -24,7 +24,7 @@ Applications render `ModelViewer` with a local or supported Filament buffer sour
 
 ## Capabilities and Constraints
 
-- Loads and renders one GLB model with a camera, default lighting, viewport tracking, optional auto-fit, loading fallback, observable render-error fallback, and load or error callbacks.
+- Loads and renders one GLB model with a camera, default lighting, viewport tracking, optional auto-fit, loading fallback, observable render-error fallback, load or error callbacks, and an optional accessible model description.
 - Exposes imperative reset, fit, and world-to-screen projection through a ref and the public context.
 - Targets native iOS and Android with React Native 0.83.10, React 19.2.0, `react-native-filament` 1.11.0, and Worklets Core 1.6.3 as the validated MVP matrix.
 - Expo Development Build or prebuild may integrate the native dependencies; Expo Go cannot.
@@ -55,4 +55,4 @@ Preserve the package name `@arangit/react-native-model-viewer` pending npm-scope
 
 ## Accessibility & Inclusion
 
-The viewer is primarily a visual surface and does not currently define a semantic model description API. Host applications remain responsible for equivalent accessible descriptions and non-visual alternatives; future work must not claim that the rendered model is self-describing.
+The viewer exposes a sibling image description when the host supplies `accessibilityLabel`, without grouping interactive overlays. Host applications remain responsible for meaningful model copy, equivalent task content, and non-visual alternatives; the rendered geometry is not self-describing.

@@ -102,6 +102,24 @@ describe('HotspotLayer and Hotspot', () => {
     ]);
   });
 
+  it('keeps measured hotspot content inside the viewport edge', () => {
+    const screen = render(
+      <HotspotLayer>
+        <Hotspot edgePadding={8} id="edge" position={[98, 78, 0]} />
+      </HotspotLayer>,
+    );
+    const hotspot = screen.getByTestId('hotspot-edge');
+
+    fireEvent(hotspot, 'layout', {
+      nativeEvent: { layout: { height: 44, width: 60, x: 0, y: 0 } },
+    });
+
+    expect(transformFor(hotspot)).toEqual([
+      { translateX: 32 },
+      { translateY: 28 },
+    ]);
+  });
+
   it('supports hidden and disabled states', () => {
     const screen = render(
       <HotspotLayer>
@@ -194,6 +212,21 @@ describe('HotspotLayer and Hotspot', () => {
     expect(() => render(<HotspotLayer />)).toThrow(
       'useModelViewer must be used inside <ModelViewer>.',
     );
+    consoleError.mockRestore();
+  });
+
+  it('rejects invalid edge padding', () => {
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    expect(() =>
+      render(
+        <HotspotLayer>
+          <Hotspot edgePadding={-1} id="invalid" position={[0, 0, 0]} />
+        </HotspotLayer>,
+      ),
+    ).toThrow('edgePadding must be a finite number of zero or more');
     consoleError.mockRestore();
   });
 });

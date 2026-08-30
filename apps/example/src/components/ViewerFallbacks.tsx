@@ -1,5 +1,6 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import type { ModelViewerErrorFallbackProps } from '@arangit/react-native-model-viewer';
+import { AppText as Text } from './AppText';
 
 export function LoadingFallback() {
   return (

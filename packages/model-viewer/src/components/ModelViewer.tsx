@@ -43,6 +43,8 @@ const ModelViewerInstance = forwardRef<ModelViewerHandle, ModelViewerProps>(
       onError,
       children,
       onLayout,
+      accessibilityHint,
+      accessibilityLabel,
       ...viewProps
     },
     ref,
@@ -258,6 +260,18 @@ const ModelViewerInstance = forwardRef<ModelViewerHandle, ModelViewerProps>(
               />
             </FilamentScene>
           </ModelViewerErrorBoundary>
+
+          {accessibilityLabel === undefined ? null : (
+            <View
+              accessibilityHint={accessibilityHint}
+              accessibilityLabel={accessibilityLabel}
+              accessibilityRole="image"
+              accessible
+              importantForAccessibility="yes"
+              pointerEvents="none"
+              style={StyleSheet.absoluteFill}
+            />
+          )}
 
           <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
             {effectiveStatus === 'loading' ? loadingFallback : null}

@@ -20,7 +20,7 @@ export interface ExampleProps {
   model: ExampleModel;
 }
 
-export const DEFAULT_EXAMPLE_MODEL: ExampleModel = {
+const VERTEX_CUBE_MODEL: ExampleModel = {
   id: 'vertex-cube',
   label: 'Vertex cube',
   source: require('../assets/BoxVertexColors.glb') as ModelSource,
@@ -66,8 +66,10 @@ const HOUSE_MODEL: ExampleModel = {
 };
 
 export const EXAMPLE_MODELS: ReadonlyArray<ExampleModel> = [
-  DEFAULT_EXAMPLE_MODEL,
-  ITALJET_DRAGSTER_MODEL,
-  HORNET_MODEL,
   HOUSE_MODEL,
+  HORNET_MODEL,
+  ITALJET_DRAGSTER_MODEL,
+  VERTEX_CUBE_MODEL,
 ];
+
+export const DEFAULT_EXAMPLE_MODEL = HOUSE_MODEL;

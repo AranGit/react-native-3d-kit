@@ -27,6 +27,8 @@ const model = require('./model.glb');
 export function Preview() {
   return (
     <ModelViewer
+      accessibilityHint="Use the controls to inspect the model"
+      accessibilityLabel="Interactive 3D product model"
       autoFit
       backgroundColor="#10131A"
       errorFallback={({ error }) => <Text>{error.message}</Text>}
@@ -57,6 +59,11 @@ The ref exposes `resetCamera()`, `fitToModel()`, and
 `projectWorldToScreen(position)`. The hook additionally exposes status, error,
 viewport, the narrow camera controller needed by plugins, and projection update
 subscription. Calling the hook outside a viewer throws a helpful error.
+
+When `accessibilityLabel` is provided, the viewer exposes a sibling image
+description without grouping or hiding interactive React Native overlays.
+Applications should describe the model's purpose and provide equivalent
+controls or content for tasks that cannot be completed visually.
 
 `loading` and the loading fallback remain active while the asset is prepared,
 added to the scene, and auto-fitted. `loaded` and `onLoad` are reported only
