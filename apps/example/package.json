@@ -18,7 +18,6 @@
     "@arangit/react-native-3d-controls": "workspace:*",
     "@arangit/react-native-3d-hotspots": "workspace:*",
     "@arangit/react-native-model-viewer": "workspace:*",
-    "@reactvision/react-viro": "2.58.1",
     "react": "19.2.0",
     "react-native": "0.83.10",
     "react-native-filament": "1.11.0",

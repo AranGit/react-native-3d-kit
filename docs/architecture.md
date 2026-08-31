@@ -99,11 +99,8 @@ copy of every native module. Workspace packages appear only as `workspace:*`
 development links; pnpm rewrites publishable relationships while packing.
 
 The tested compatibility matrix is React Native 0.83.10, React 19.2.0,
-React Native Filament 1.11.0, Worklets Core 1.6.3, Gesture Handler 2.32.0, and
-ViroReact 2.58.1 in the private example app. Peer ranges intentionally cover
-only the minor lines validated for the public packages; ViroReact is not a
-package peer. Its prebuilt ViroKit framework raises only the private iOS
-example's deployment target to iOS 17.6.
+React Native Filament 1.11.0, Worklets Core 1.6.3, and Gesture Handler 2.32.0.
+Peer ranges intentionally cover only those validated minor lines.
 
 React Native Filament publishes a declaration that references the optional
 `react-native-reanimated` `SharedValue` type even when Reanimated is not used.
@@ -137,8 +134,7 @@ without a private API. This is a documented upstream boundary.
 - No mesh/node entity anchoring, label-to-label collision avoidance, clustering, editor,
   or persistence.
 - No animation controller, model caching, screenshots, AR, physics, conversion,
-  material editing, or web implementation in the public packages. The private
-  example demonstrates AR as a separate ViroReact integration.
+  material editing, or web implementation.
 
 ## Future extension points
 
